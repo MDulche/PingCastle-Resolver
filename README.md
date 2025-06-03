@@ -1,5 +1,10 @@
 # Description du projet / Project Description
 
+This repository is not affiliated with PingCastle. The proposed solutions are based on generic best practices and not PingCastle reports.
+Here is a link to the official website: https://www.pingcastle.com/.
+
+Ce dépôt n'est pas affilié à PingCastle. Les solutions proposées sont basées sur des bonnes pratiques génériques et non sur des rapports PingCastle.
+Voilà un lien vers le site officiel : https://www.pingcastle.com/.
 
 ## English
 This project involves a comprehensive security audit of an Active Directory environment using the PingCastle tool, followed by systematic implementation of remediation recommendations.  
