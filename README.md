@@ -64,6 +64,8 @@ Brève description technique du risque (ex : Permet des attaques DCSync via dél
 - Recommandations / Recommendations  
 - Explication de la solution / Explanation of the solution  
 
+#### Vérification / verification  
+- Vérification de la mise en place de la solution / Verification of solution implementation
 ---
 
 ## Sources / Sources  
