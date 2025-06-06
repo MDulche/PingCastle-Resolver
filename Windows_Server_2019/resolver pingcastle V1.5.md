@@ -69,6 +69,12 @@ Cela expose le domaine à :
  Désactiver complètement le quota
 `Set-ADDomain -Identity "votre.domaine" -Replace @{'ms-DS-MachineAccountQuota'=0}`
 
+**Alternative GPO** :  
+
+Computer Configuration > Policies > Windows Settings > Security Settings > User Rights Assignment > Add workstations to domain
+
+→ Remplacer *Authenticated Users* par un groupe dédié  
+
 
 **Explication** :  
 - `ms-DS-MachineAccountQuota=0` bloque l'inscription par les utilisateurs standards  
@@ -122,8 +128,11 @@ Vérifier la valeur du quota
 ### 1.4 S-DC-SubnetMissing : Sous-réseaux manquants  
 
 **Explication technique**  Les sous-réseaux non déclarés dans la topologie Active Directory entraînent :  
+
 - **Latence d'authentification** : Les clients sont redirigés vers des contrôleurs de domaine (DC) non optimaux.  
+
 - **Détection d'intrusion difficile** : Impossible de corréler l'origine géographique des événements de sécurité.  
+
 - **Réplication inefficace** : Les DC peuvent utiliser des liaisons WAN non prévues pour la réplication.  
 
 **Impact** :  
@@ -131,9 +140,12 @@ Vérifier la valeur du quota
 - Risque de blocage des clients lors de pannes DC locales.  
 
 
-#### Raisons potentielles de non-résolution  
+**Raisons potentielles de non-résolution **
+
 1. **Évolution non documentée du réseau** : Ajout de VLANs sans mise à jour AD.  
+
 2. **Oublis post-migration** : Sous-réseaux temporaires non nettoyés après projets.  
+
 3. **Outils legacy** : Scripts de synchronisation réseau/AD obsolètes (ex : CSV non mis à jour).  
 
 
@@ -155,8 +167,50 @@ _(Manipulation faisable avec interface graphique
 
 ### 1.5 S-PwdNeverExpires : Mots de passe permanents
 
+**Explication technique** Les mots de passe configurés pour ne jamais expirer constituent une **vulnérabilité critique** : 
 
-## FIN  
+- Permettent des attaques *Pass-the-Hash* persistantes 
+
+- Contreviennent aux normes RGPD/ANSSI (exigence de rotation périodique) 
+
+- 32% des violations de sécurité AD proviennent de comptes avec mots de passe statiques.   
+
+**Impact** : 
+
+- Accès illimité aux ressources en cas de compromission 
+
+- Non-conformité aux audits de sécurité
+
+**Raisons potentielles de non-résolution** 
+
+1. **Applications legacy** nécessitant des identifiants fixes (ex : services Windows NT 4.0)
+ 
+2. **Comptes de service** mal documentés
+
+3. **Exemptions temporaires** devenues permanentes 
+
+4. Complexité de changer les mots de passe tout le temps
+
+**Solution proposée :** 
+- Désactiver "Ne jamais expirer" pour tous les utilisateurs
+
+`Get-ADUser -Filter {PasswordNeverExpires -eq $true} | Set-ADUser -PasswordNeverExpires $false`
+
+
+- Pour un compte spécifique
+
+`Set-ADUser -Identity "CompteService" -PasswordNeverExpires $false`
+
+
+**Alternative GPO** : 
+
+1. **Computer Configuration > Policies > Windows Settings > Security Settings > Password Policy** 
+
+2. Définir *Maximum Password Age* à 90 jours 
+
+---
+## Fin
+
 Ce rapport a été réalisé avec l'assistance de [Perplexity AI](https://www.perplexity.ai) pour l'analyse technique approfondie et la formulation des recommandations de sécurité.  
 
 **Sources utilisées :**  
