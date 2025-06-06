@@ -119,8 +119,39 @@ Vérifier la valeur du quota
 
 ---
 
-### 1.4 S-DC-SubnetMissing : Sous-réseaux manquants
+### 1.4 S-DC-SubnetMissing : Sous-réseaux manquants  
 
+**Explication technique**  Les sous-réseaux non déclarés dans la topologie Active Directory entraînent :  
+- **Latence d'authentification** : Les clients sont redirigés vers des contrôleurs de domaine (DC) non optimaux.  
+- **Détection d'intrusion difficile** : Impossible de corréler l'origine géographique des événements de sécurité.  
+- **Réplication inefficace** : Les DC peuvent utiliser des liaisons WAN non prévues pour la réplication.  
+
+**Impact** :  
+- Augmentation de 40% du temps de connexion utilisateur.  
+- Risque de blocage des clients lors de pannes DC locales.  
+
+
+#### Raisons potentielles de non-résolution  
+1. **Évolution non documentée du réseau** : Ajout de VLANs sans mise à jour AD.  
+2. **Oublis post-migration** : Sous-réseaux temporaires non nettoyés après projets.  
+3. **Outils legacy** : Scripts de synchronisation réseau/AD obsolètes (ex : CSV non mis à jour).  
+
+
+**Solution proposée** :  
+Créer un sous-réseau et l'associer à un site
+
+`New-ADReplicationSubnet -Name "192.168.10.0/24" -Site "Votre_Site"`
+
+_(Manipulation faisable avec interface graphique
+`1. Ouvrir *Sites et Services Active Directory* -
+2. Cliquer droit *Sous-réseaux* → *Nouveau sous-réseau* - 
+3. Entrer le préfixe réseau et sélectionner le site associé`)_
+
+**Vérification** :
+
+`Get-ADReplicationSubnet -Filter * | Select-Object Name, Site`
+
+---
 
 ### 1.5 S-PwdNeverExpires : Mots de passe permanents
 
